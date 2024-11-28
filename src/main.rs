@@ -1,9 +1,11 @@
-fn test_func_for_check_commits(num: i32) {
-    for i in 0..num {
-        print!("{}, ", i);
-    }
-}
+use std::net::TcpListener;
 
 fn main() {
-    test_func_for_check_commits(14);
+    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+
+    for stream in listener.incoming() {
+        let stream = stream.unwrap();
+
+        println!("Connection established");
+    }
 }

@@ -1,6 +1,6 @@
 use std::net::TcpListener;
 use std::io::prelude::BufRead;
-use std::io::*;
+use std::{ fs, io::* };
 use std::net::TcpStream;
 
 fn main() {
@@ -14,14 +14,26 @@ fn main() {
 }
 
 fn handle_connection(mut stream: TcpStream) {
-    let buf_reader = BufReader::new(&mut stream);
-    let http_request: Vec<_> = buf_reader
-        .lines()
-        .map(|result| result.unwrap())
-        .take_while(|line| !line.is_empty())
-        .collect();
-    let response = "HTTP/1.1 200 OK\r\n\r\n";
-    stream.write_all(response.as_bytes()).unwrap();
+    let contents = fs::read_to_string("./src/hello.html");
 
-    println!("Request: {http_request:#?}")
+    let (status_line, response_body) = match contents {
+        Ok(data) => {
+            let length = data.len();
+            println!("Data: {data}");
+            println!("Len of file: {length}");
+            ("HTTP/1.1 200 OK", data)
+        }
+        Err(e) => {
+            eprintln!("Error reading file: {}", e);
+            ("HTTP/1.1 404 NOT FOUND", "404 Not Found".to_string())
+        }
+    };
+
+    let response = format!(
+        "{}\r\nContent-Length: {}\r\n\r\n{}",
+        status_line,
+        response_body.len(),
+        response_body
+    );
+    stream.write_all(response.as_bytes()).unwrap()
 }

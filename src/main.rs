@@ -1,8 +1,8 @@
-use std::net::TcpListener;
-use std::time::Duration;
-use std::{ fs, io::*, thread };
-use std::net::TcpStream;
 use rs_project::ThreadPool;
+use std::net::TcpListener;
+use std::net::TcpStream;
+use std::time::Duration;
+use std::{fs, io::*, thread};
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
